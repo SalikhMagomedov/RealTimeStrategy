@@ -9,6 +9,8 @@ namespace Rts.Networking
     {
         [SerializeField] private List<Unit> myUnits = new List<Unit>();
 
+        public IEnumerable<Unit> MyUnits => myUnits;
+
         #region Server
 
         public override void OnStartServer()
