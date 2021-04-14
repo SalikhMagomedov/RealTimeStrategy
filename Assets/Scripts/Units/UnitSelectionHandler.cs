@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Mirror;
 using Rts.Networking;
 using UnityEngine;
@@ -25,36 +24,27 @@ namespace Rts.Units
 
         private void Update()
         {
-            if (_player == null)
-            {
-                _player = NetworkClient.connection.identity.GetComponent<RtsPlayer>();
-            }
-            
+            if (_player == null) _player = NetworkClient.connection.identity.GetComponent<RtsPlayer>();
+
             if (Mouse.current.leftButton.wasPressedThisFrame)
-            {
                 StartSelectionArea();
-            }
             else if (Mouse.current.leftButton.wasReleasedThisFrame)
-            {
                 ClearSelectionArea();
-            }
-            else if (Mouse.current.leftButton.isPressed)
-            {
-                UpdateSelectionArea();
-            }
+            else if (Mouse.current.leftButton.isPressed) UpdateSelectionArea();
         }
 
         private void StartSelectionArea()
         {
-            foreach (var selectedUnit in SelectedUnits)
+            if (!Keyboard.current.leftShiftKey.isPressed)
             {
-                selectedUnit.Deselect();
+                foreach (var selectedUnit in SelectedUnits) selectedUnit.Deselect();
+
+                SelectedUnits.Clear();
             }
-            SelectedUnits.Clear();
-            
+
             unitSelectionArea.gameObject.SetActive(true);
             _startPosition = Mouse.current.position.ReadValue();
-            
+
             UpdateSelectionArea();
         }
 
@@ -71,7 +61,7 @@ namespace Rts.Units
         private void ClearSelectionArea()
         {
             unitSelectionArea.gameObject.SetActive(false);
-            
+
             if (unitSelectionArea.sizeDelta.sqrMagnitude == 0)
             {
                 var ray = _mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
@@ -79,28 +69,24 @@ namespace Rts.Units
                 if (!Physics.Raycast(ray, out var hit, Mathf.Infinity, layerMask)) return;
                 if (!hit.collider.TryGetComponent<Unit>(out var unit)) return;
                 if (!unit.hasAuthority) return;
-            
+
                 SelectedUnits.Add(unit);
 
-                foreach (var selectedUnit in SelectedUnits)
-                {
-                    selectedUnit.Select();
-                }
-                
+                foreach (var selectedUnit in SelectedUnits) selectedUnit.Select();
+
                 return;
             }
 
             var min = unitSelectionArea.anchoredPosition - unitSelectionArea.sizeDelta / 2;
             var max = unitSelectionArea.anchoredPosition + unitSelectionArea.sizeDelta / 2;
 
-            foreach (var unit in from unit in _player.MyUnits
-                let screenPosition = _mainCamera.WorldToScreenPoint(unit.transform.position)
-                where screenPosition.x > min.x &&
-                      screenPosition.x < max.x &&
-                      screenPosition.y > min.y &&
-                      screenPosition.y < max.y
-                select unit)
+            foreach (var unit in _player.MyUnits)
             {
+                if (SelectedUnits.Contains(unit)) continue;
+
+                var screenPosition = _mainCamera.WorldToScreenPoint(unit.transform.position);
+                if (!(screenPosition.x > min.x) || !(screenPosition.x < max.x) || !(screenPosition.y > min.y) ||
+                    !(screenPosition.y < max.y)) continue;
                 SelectedUnits.Add(unit);
                 unit.Select();
             }
