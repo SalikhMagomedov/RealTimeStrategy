@@ -11,7 +11,10 @@ namespace Rts.Networking
         {
             base.OnServerAddPlayer(conn);
 
-            var unitSpawnerInstance = Instantiate(unitSpawnerPrefab, conn.identity.transform);
+            var connectionTransform = conn.identity.transform;
+            var unitSpawnerInstance = Instantiate(unitSpawnerPrefab,
+                connectionTransform.position,
+                connectionTransform.rotation);
             
             NetworkServer.Spawn(unitSpawnerInstance, conn);
         }

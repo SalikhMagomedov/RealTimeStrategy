@@ -14,7 +14,7 @@ namespace Rts.Buildings
         [Command]
         private void CmdSpawnUnit()
         {
-            var unitInstance = Instantiate(unitPrefab, unitSpawnPoint);
+            var unitInstance = Instantiate(unitPrefab, unitSpawnPoint.position, unitSpawnPoint.rotation);
             
             NetworkServer.Spawn(unitInstance, connectionToClient);
         }
