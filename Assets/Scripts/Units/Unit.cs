@@ -1,4 +1,5 @@
-﻿using Mirror;
+﻿using System;
+using Mirror;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -10,9 +11,41 @@ namespace Rts.Units
         [SerializeField] private UnityEvent onSelected;
         [SerializeField] private UnityEvent onDeselected;
 
+        public static event Action<Unit> ServerOnUnitSpawned;
+        public static event Action<Unit> ServerOnUnitDespawned;
+        public static event Action<Unit> AuthorityOnUnitSpawned;
+        public static event Action<Unit> AuthorityOnUnitDespawned;
         public UnitMovement UnitMovement => unitMovement;
 
+        #region Server
+
+        public override void OnStartServer()
+        {
+            OnServerOnUnitSpawned(this);
+        }
+
+        public override void OnStopServer()
+        {
+            OnServerOnUnitDespawned(this);
+        }
+
+        #endregion
+
         #region Client
+
+        public override void OnStartClient()
+        {
+            if (!isClientOnly || !hasAuthority) return;
+            
+            OnAuthorityOnUnitSpawned(this);
+        }
+
+        public override void OnStopClient()
+        {
+            if (!isClientOnly || !hasAuthority) return;
+            
+            OnAuthorityOnUnitDespawned(this);
+        }
 
         [Client]
         public void Select()
@@ -31,5 +64,25 @@ namespace Rts.Units
         }
 
         #endregion
+
+        private static void OnServerOnUnitSpawned(Unit unit)
+        {
+            ServerOnUnitSpawned?.Invoke(unit);
+        }
+
+        private static void OnServerOnUnitDespawned(Unit unit)
+        {
+            ServerOnUnitDespawned?.Invoke(unit);
+        }
+
+        private static void OnAuthorityOnUnitSpawned(Unit unit)
+        {
+            AuthorityOnUnitSpawned?.Invoke(unit);
+        }
+
+        private static void OnAuthorityOnUnitDespawned(Unit unit)
+        {
+            AuthorityOnUnitDespawned?.Invoke(unit);
+        }
     }
 }
