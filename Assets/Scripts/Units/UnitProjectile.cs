@@ -1,4 +1,5 @@
 ﻿using Mirror;
+using Rts.Combat;
 using UnityEngine;
 
 namespace Rts.Units
@@ -6,6 +7,7 @@ namespace Rts.Units
     public class UnitProjectile : NetworkBehaviour
     {
         [SerializeField] private Rigidbody rb;
+        [SerializeField] private int damageToDeal = 20;
         [SerializeField] private float destroyAfterSeconds = 5f;
         [SerializeField] private float launchForce = 10f;
 
@@ -17,6 +19,22 @@ namespace Rts.Units
         public override void OnStartServer()
         {
             Invoke(nameof(DestroySelf), destroyAfterSeconds);
+        }
+
+        [ServerCallback]
+        private void OnTriggerEnter(Collider other)
+        {
+            if (other.TryGetComponent<NetworkIdentity>(out var networkIdentity))
+            {
+                if (networkIdentity.connectionToClient == connectionToClient) return;
+            }
+
+            if (other.TryGetComponent<Health>(out var health))
+            {
+                health.DealDamage(damageToDeal);
+            }
+            
+            DestroySelf();
         }
 
         [Server]

@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: -3067760469437153663}
   - component: {fileID: 5725405509612384634}
   - component: {fileID: 3156641212593133865}
+  - component: {fileID: 1665259545248180344}
   m_Layer: 0
   m_Name: Unit
   m_TagString: Untagged
@@ -228,6 +229,21 @@ MonoBehaviour:
   fireRange: 11
   fireRate: 1
   rotationSpeed: 180
+--- !u!114 &1665259545248180344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3758664969175478056}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e97c1c11bde8442ba6eb39288c34b3e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  maxHealth: 100
 --- !u!1 &8421610577662404658
 GameObject:
   m_ObjectHideFlags: 0
