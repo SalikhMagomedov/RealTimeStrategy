@@ -6,8 +6,11 @@ namespace Rts.Units
 {
     public class Unit : NetworkBehaviour
     {
+        [SerializeField] private UnitMovement unitMovement;
         [SerializeField] private UnityEvent onSelected;
         [SerializeField] private UnityEvent onDeselected;
+
+        public UnitMovement UnitMovement => unitMovement;
 
         #region Client
 
