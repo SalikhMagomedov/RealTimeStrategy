@@ -1,5 +1,6 @@
 ﻿using System;
 using Mirror;
+using Rts.Combat;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -8,6 +9,7 @@ namespace Rts.Units
     public class Unit : NetworkBehaviour
     {
         [SerializeField] private UnitMovement unitMovement;
+        [SerializeField] private Targeter targeter;
         [SerializeField] private UnityEvent onSelected;
         [SerializeField] private UnityEvent onDeselected;
 
@@ -15,7 +17,9 @@ namespace Rts.Units
         public static event Action<Unit> ServerOnUnitDespawned;
         public static event Action<Unit> AuthorityOnUnitSpawned;
         public static event Action<Unit> AuthorityOnUnitDespawned;
+        
         public UnitMovement UnitMovement => unitMovement;
+        public Targeter Targeter => targeter;
 
         #region Server
 

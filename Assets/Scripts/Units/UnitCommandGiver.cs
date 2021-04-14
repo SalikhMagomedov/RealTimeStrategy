@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Rts.Combat;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Rts.Units
@@ -23,7 +24,26 @@ namespace Rts.Units
 
             if (!Physics.Raycast(ray, out var hit, Mathf.Infinity, layerMask)) return;
 
+            if (hit.collider.TryGetComponent<Targetable>(out var target))
+            {
+                if (target.hasAuthority)
+                {
+                    TryMove(hit.point);
+                    return;
+                }
+
+                TryTarget(target);
+                return;
+            }
             TryMove(hit.point);
+        }
+
+        private void TryTarget(Targetable target)
+        {
+            foreach (var unit in unitSelectionHandler.SelectedUnits)
+            {
+                unit.Targeter.CmdSetTarget(target.gameObject);
+            }
         }
 
         private void TryMove(Vector3 point)

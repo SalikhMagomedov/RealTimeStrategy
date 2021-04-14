@@ -1,4 +1,5 @@
 ﻿using Mirror;
+using Rts.Combat;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -7,6 +8,7 @@ namespace Rts.Units
     public class UnitMovement : NetworkBehaviour
     {
         [SerializeField] private NavMeshAgent agent;
+        [SerializeField] private Targeter targeter;
 
         #region Server
 
@@ -22,6 +24,8 @@ namespace Rts.Units
         [Command]
         public void CmdMove(Vector3 position)
         {
+            targeter.ClearTarget();
+            
             if (!NavMesh.SamplePosition(position, out var hit, 1f, NavMesh.AllAreas)) return;
 
             agent.SetDestination(hit.position);
