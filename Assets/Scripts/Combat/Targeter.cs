@@ -5,28 +5,20 @@ namespace Rts.Combat
 {
     public class Targeter : NetworkBehaviour
     {
-        [SerializeField] private Targetable _target;
-
-        #region Server
+        public Targetable Target { get; private set; }
 
         [Command]
         public void CmdSetTarget(GameObject targetGameObject)
         {
             if (!targetGameObject.TryGetComponent<Targetable>(out var target)) return;
 
-            _target = target;
+            Target = target;
         }
 
         [Server]
         public void ClearTarget()
         {
-            _target = null;
+            Target = null;
         }
-
-        #endregion
-
-        #region Client
-
-        #endregion
     }
 }
