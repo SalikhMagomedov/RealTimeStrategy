@@ -1,4 +1,5 @@
 ﻿using Mirror;
+using Rts.Buildings;
 using Rts.Combat;
 using UnityEngine;
 using UnityEngine.AI;
@@ -12,6 +13,22 @@ namespace Rts.Units
         [SerializeField] private float chaseRange = 10f;
 
         #region Server
+
+        public override void OnStartServer()
+        {
+            GameOverHandler.ServerOnGameOver += ServerHandleGameOver;
+        }
+
+        public override void OnStopServer()
+        {
+            GameOverHandler.ServerOnGameOver -= ServerHandleGameOver;
+        }
+
+        [Server]
+        private void ServerHandleGameOver()
+        {
+            agent.ResetPath();
+        }
 
         [ServerCallback]
         private void Update()

@@ -1,5 +1,6 @@
 ﻿using System;
 using Mirror;
+using Rts.Buildings;
 using UnityEngine;
 
 namespace Rts.Combat
@@ -19,6 +20,12 @@ namespace Rts.Combat
         public override void OnStartServer()
         {
             _currentHealth = maxHealth;
+            UnitBase.ServerOnPlayerDie += ServerHandlePlayerDie;
+        }
+
+        public override void OnStopServer()
+        {
+            UnitBase.ServerOnPlayerDie -= ServerHandlePlayerDie;
         }
 
         [Server]
@@ -33,6 +40,14 @@ namespace Rts.Combat
             OnServerOnDie();
 
             Debug.Log("We Died");
+        }
+
+        [Server]
+        private void ServerHandlePlayerDie(int obj)
+        {
+            if (connectionToClient.connectionId != obj) return;
+            
+            DealDamage(_currentHealth);
         }
 
         #endregion

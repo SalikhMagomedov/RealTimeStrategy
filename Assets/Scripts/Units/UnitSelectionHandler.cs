@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Mirror;
+using Rts.Buildings;
 using Rts.Networking;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -22,11 +23,18 @@ namespace Rts.Units
             _player = NetworkClient.connection.identity.GetComponent<RtsPlayer>();
 
             Unit.AuthorityOnUnitDespawned += AuthorityHandleUnitDespawned;
+            GameOverHandler.ClientOnGameOver += ClientHandleGameOver;
         }
 
         private void OnDestroy()
         {
             Unit.AuthorityOnUnitDespawned -= AuthorityHandleUnitDespawned;
+            GameOverHandler.ClientOnGameOver -= ClientHandleGameOver;
+        }
+
+        private void ClientHandleGameOver(string winnerName)
+        {
+            enabled = false;
         }
 
         private void AuthorityHandleUnitDespawned(Unit unit)

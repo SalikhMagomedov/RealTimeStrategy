@@ -9,6 +9,7 @@ namespace Rts.Buildings
     {
         [SerializeField] private Health health;
 
+        public static event Action<int> ServerOnPlayerDie;
         public static event Action<UnitBase> ServerOnBaseSpawned;
         public static event Action<UnitBase> ServerOnBaseDespawned;
 
@@ -31,6 +32,8 @@ namespace Rts.Buildings
         [Server]
         private void ServerHandleDie()
         {
+            OnServerOnPlayerDie(connectionToClient.connectionId);
+            
             NetworkServer.Destroy(gameObject);
         }
 
@@ -50,6 +53,11 @@ namespace Rts.Buildings
         private static void OnServerOnBaseDespawned(UnitBase unitBase)
         {
             ServerOnBaseDespawned?.Invoke(unitBase);
+        }
+
+        private static void OnServerOnPlayerDie(int obj)
+        {
+            ServerOnPlayerDie?.Invoke(obj);
         }
     }
 }

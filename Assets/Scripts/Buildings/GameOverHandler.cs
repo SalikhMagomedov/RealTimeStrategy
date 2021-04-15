@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using Mirror;
-using Rts.Networking;
-using UnityEngine;
 
 namespace Rts.Buildings
 {
     public class GameOverHandler : NetworkBehaviour
     {
+        public static event Action ServerOnGameOver;
         public static event Action<string> ClientOnGameOver;
         
         private List<UnitBase> bases = new List<UnitBase>();
@@ -42,6 +41,8 @@ namespace Rts.Buildings
             var playerId = bases[0].connectionToClient.connectionId;
             
             RpcGameOver($"Player {playerId}");
+            
+            OnServerOnGameOver();
         }
 
         #endregion
@@ -59,6 +60,11 @@ namespace Rts.Buildings
         private static void OnClientOnGameOver(string obj)
         {
             ClientOnGameOver?.Invoke(obj);
+        }
+
+        private static void OnServerOnGameOver()
+        {
+            ServerOnGameOver?.Invoke();
         }
     }
 }

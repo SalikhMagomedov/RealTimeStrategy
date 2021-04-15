@@ -1,4 +1,5 @@
-﻿using Rts.Combat;
+﻿using Rts.Buildings;
+using Rts.Combat;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -14,6 +15,13 @@ namespace Rts.Units
         private void Start()
         {
             _mainCamera = Camera.main;
+
+            GameOverHandler.ClientOnGameOver += ClienHandleGameOver;
+        }
+
+        private void OnDestroy()
+        {
+            GameOverHandler.ClientOnGameOver -= ClienHandleGameOver;
         }
 
         private void Update()
@@ -52,6 +60,11 @@ namespace Rts.Units
             {
                 unit.UnitMovement.CmdMove(point);
             }
+        }
+
+        private void ClienHandleGameOver(string obj)
+        {
+            enabled = false;
         }
     }
 }
