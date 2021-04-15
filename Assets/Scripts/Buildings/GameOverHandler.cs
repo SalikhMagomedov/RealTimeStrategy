@@ -1,11 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Mirror;
+using Rts.Networking;
 using UnityEngine;
 
 namespace Rts.Buildings
 {
     public class GameOverHandler : NetworkBehaviour
     {
+        public static event Action<string> ClientOnGameOver;
+        
         private List<UnitBase> bases = new List<UnitBase>();
         
         #region Server
@@ -35,15 +39,26 @@ namespace Rts.Buildings
 
             if (bases.Count != 1) return;
 
-            Debug.Log("Game Over");
+            var playerId = bases[0].connectionToClient.connectionId;
+            
+            RpcGameOver($"Player {playerId}");
         }
 
         #endregion
 
         #region Client
 
-        
+        [ClientRpc]
+        private void RpcGameOver(string winner)
+        {
+            OnClientOnGameOver(winner);
+        }
 
         #endregion
+
+        private static void OnClientOnGameOver(string obj)
+        {
+            ClientOnGameOver?.Invoke(obj);
+        }
     }
 }
