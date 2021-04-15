@@ -20,6 +20,18 @@ namespace Rts.Units
         {
             _mainCamera = Camera.main;
             _player = NetworkClient.connection.identity.GetComponent<RtsPlayer>();
+
+            Unit.AuthorityOnUnitDespawned += AuthorityHandleUnitDespawned;
+        }
+
+        private void OnDestroy()
+        {
+            Unit.AuthorityOnUnitDespawned -= AuthorityHandleUnitDespawned;
+        }
+
+        private void AuthorityHandleUnitDespawned(Unit unit)
+        {
+            SelectedUnits.Remove(unit);
         }
 
         private void Update()

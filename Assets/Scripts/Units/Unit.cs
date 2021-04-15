@@ -8,6 +8,7 @@ namespace Rts.Units
 {
     public class Unit : NetworkBehaviour
     {
+        [SerializeField] private Health health;
         [SerializeField] private UnitMovement unitMovement;
         [SerializeField] private Targeter targeter;
         [SerializeField] private UnityEvent onSelected;
@@ -26,27 +27,35 @@ namespace Rts.Units
         public override void OnStartServer()
         {
             OnServerOnUnitSpawned(this);
+            
+            health.ServerOnDie += ServerHandleDie;
         }
 
         public override void OnStopServer()
         {
+            health.ServerOnDie -= ServerHandleDie;
+            
             OnServerOnUnitDespawned(this);
+        }
+
+        [Server]
+        private void ServerHandleDie()
+        {
+            NetworkServer.Destroy(gameObject);
         }
 
         #endregion
 
         #region Client
 
-        public override void OnStartClient()
-        {
-            if (!isClientOnly || !hasAuthority) return;
-            
+        public override void OnStartAuthority()
+        { 
             OnAuthorityOnUnitSpawned(this);
         }
 
         public override void OnStopClient()
         {
-            if (!isClientOnly || !hasAuthority) return;
+            if (!hasAuthority) return;
             
             OnAuthorityOnUnitDespawned(this);
         }
