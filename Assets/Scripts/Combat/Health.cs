@@ -8,10 +8,11 @@ namespace Rts.Combat
     {
         [SerializeField] private int maxHealth = 100;
 
-        [SyncVar]
+        [SyncVar(hook = nameof(HandleHealthUpdated))]
         private int _currentHealth;
 
         public event Action ServerOnDie;
+        public event Action<int, int> ClientOnHealthUpdated;
 
         #region Server
 
@@ -38,13 +39,21 @@ namespace Rts.Combat
 
         #region Client
 
-        
+        private void HandleHealthUpdated(int oldHealth, int newHealth)
+        {
+            OnClientOnHealthUpdated(newHealth, maxHealth);
+        }
 
         #endregion
 
         protected virtual void OnServerOnDie()
         {
             ServerOnDie?.Invoke();
+        }
+
+        protected virtual void OnClientOnHealthUpdated(int newHealth, int max)
+        {
+            ClientOnHealthUpdated?.Invoke(newHealth, max);
         }
     }
 }
