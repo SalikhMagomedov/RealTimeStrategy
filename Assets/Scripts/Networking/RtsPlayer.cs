@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Mirror;
 using Rts.Buildings;
@@ -12,9 +13,20 @@ namespace Rts.Networking
         [SerializeField] private Building[] buildings = new Building[0];
         [SerializeField] private List<Unit> myUnits = new List<Unit>();
         [SerializeField] private List<Building> myBuildings = new List<Building>();
+
+        public event Action<int> ClientOnResourcesUpdated; 
         
         public IEnumerable<Unit> MyUnits => myUnits;
         public IEnumerable<Building> MyBuildings => myBuildings;
+        
+        [field: SyncVar(hook = nameof(ClientHandleResourcesUpdated))]
+        public int Resources { get; private set; } = 500;
+
+        [Server]
+        public void SetResources(int newResources)
+        {
+            Resources = newResources;
+        }
 
         #region Server
 
@@ -118,6 +130,16 @@ namespace Rts.Networking
             myBuildings.Remove(building);
         }
 
+        private void ClientHandleResourcesUpdated(int oldValue, int newValue)
+        {
+            OnClientOnResourcesUpdated(newValue);
+        }
+
         #endregion
+
+        protected virtual void OnClientOnResourcesUpdated(int obj)
+        {
+            ClientOnResourcesUpdated?.Invoke(obj);
+        }
     }
 }
