@@ -310,14 +310,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: NetworkManager
       objectReference: {fileID: 0}
-    - target: {fileID: 1402821501546144966, guid: 7a7108e1f0d04e847a6928dfb1224304, type: 3}
-      propertyPath: spawnPrefabs.Array.size
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 1402821501546144966, guid: 7a7108e1f0d04e847a6928dfb1224304, type: 3}
-      propertyPath: spawnPrefabs.Array.data[3]
-      value: 
-      objectReference: {fileID: 7080335671494295154, guid: 847c3d9b7683ba8429b2b728792606cb, type: 3}
     - target: {fileID: 1402821501546144967, guid: 7a7108e1f0d04e847a6928dfb1224304, type: 3}
       propertyPath: m_RootOrder
       value: 2
