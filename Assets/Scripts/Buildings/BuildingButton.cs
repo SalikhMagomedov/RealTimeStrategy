@@ -58,7 +58,7 @@ namespace Rts.Buildings
 
             if (Physics.Raycast(ray, out var hit, Mathf.Infinity, floorMask))
             {
-                
+                _player.CmdTryPlaceBuilding(building.ID, hit.point);
             }
             
             Destroy(_buildingPreviewInstance);
