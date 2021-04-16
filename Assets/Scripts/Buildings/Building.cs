@@ -6,6 +6,7 @@ namespace Rts.Buildings
 {
     public class Building : NetworkBehaviour
     {
+        [SerializeField] private GameObject buildingPreview;
         [SerializeField] private Sprite icon;
         [SerializeField] private int id = -1;
         [SerializeField] private int price = 100;
@@ -15,6 +16,8 @@ namespace Rts.Buildings
         public static event Action<Building> AuthorityOnBuildingSpawned;
         public static event Action<Building> AuthorityOnBuildingDespawned;
 
+        public GameObject BuildingPreview => buildingPreview;
+        
         public Sprite Icon => icon;
 
         public int ID => id;
