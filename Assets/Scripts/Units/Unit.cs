@@ -8,6 +8,7 @@ namespace Rts.Units
 {
     public class Unit : NetworkBehaviour
     {
+        [SerializeField] private int resourceCost = 10;
         [SerializeField] private Health health;
         [SerializeField] private UnitMovement unitMovement;
         [SerializeField] private Targeter targeter;
@@ -18,7 +19,8 @@ namespace Rts.Units
         public static event Action<Unit> ServerOnUnitDespawned;
         public static event Action<Unit> AuthorityOnUnitSpawned;
         public static event Action<Unit> AuthorityOnUnitDespawned;
-        
+
+        public int ResourceCost => resourceCost;
         public UnitMovement UnitMovement => unitMovement;
         public Targeter Targeter => targeter;
 
