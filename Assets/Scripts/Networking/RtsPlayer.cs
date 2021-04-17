@@ -13,12 +13,13 @@ namespace Rts.Networking
         [SerializeField] private Building[] buildings = new Building[0];
         [SerializeField] private LayerMask buildingBlockLayer;
         [SerializeField] private float buildingRangeLimit = 5f;
-        
+
+        private Color _teamColor;
         private readonly List<Unit> _myUnits = new List<Unit>();
         private readonly List<Building> _myBuildings = new List<Building>();
         
-        public event Action<int> ClientOnResourcesUpdated; 
-        
+        public event Action<int> ClientOnResourcesUpdated;
+
         public IEnumerable<Unit> MyUnits => _myUnits;
         public IEnumerable<Building> MyBuildings => _myBuildings;
         
@@ -54,6 +55,18 @@ namespace Rts.Networking
             Unit.ServerOnUnitDespawned -= ServerHandleUnitDespawned;
             Building.ServerOnBuildingSpawned -= ServerHandleBuildingSpawned;
             Building.ServerOnBuildingDespawned -= ServerHandleBuildingDespawned;
+        }
+        
+        [Server]
+        public Color GetTeamColor()
+        {
+            return _teamColor;
+        }
+
+        [Server]
+        public void SetTeamColor(Color color)
+        {
+            _teamColor = color;
         }
 
         [Command]

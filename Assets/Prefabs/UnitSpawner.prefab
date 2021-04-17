@@ -597,6 +597,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: UnitSpawner
       objectReference: {fileID: 0}
+    - target: {fileID: 7036807126739392139, guid: 2e85181bebaebb048a51e731b4bdd119, type: 3}
+      propertyPath: colorRenderers.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7036807126739392139, guid: 2e85181bebaebb048a51e731b4bdd119, type: 3}
+      propertyPath: colorRenderers.Array.data[0]
+      value: 
+      objectReference: {fileID: 8705675500516322712}
     - target: {fileID: 7934816717407463048, guid: 2e85181bebaebb048a51e731b4bdd119, type: 3}
       propertyPath: m_AssetId
       value: 
@@ -684,5 +692,10 @@ PrefabInstance:
 --- !u!4 &2679267963150034385 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 286232008492024297, guid: 7170c3fd7262aba4db142044a00b9a35, type: 3}
+  m_PrefabInstance: {fileID: 2798506109057885240}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &8705675500516322712 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6775260764056799648, guid: 7170c3fd7262aba4db142044a00b9a35, type: 3}
   m_PrefabInstance: {fileID: 2798506109057885240}
   m_PrefabAsset: {fileID: 0}
