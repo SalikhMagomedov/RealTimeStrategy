@@ -19,6 +19,9 @@ namespace Rts.Buildings
         private RtsPlayer _player;
         private GameObject _buildingPreviewInstance;
         private Renderer _buildingRendererInstance;
+        private BoxCollider _buildingCollider;
+        
+        private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
 
         private void Start()
         {
@@ -26,6 +29,8 @@ namespace Rts.Buildings
 
             iconImage.sprite = building.Icon;
             priceText.text = building.Price.ToString();
+
+            _buildingCollider = building.GetComponent<BoxCollider>();
         }
 
         private void Update()
@@ -43,6 +48,7 @@ namespace Rts.Buildings
         public void OnPointerDown(PointerEventData eventData)
         {
             if (eventData.button != PointerEventData.InputButton.Left) return;
+            if (_player.Resources < building.Price) return;
 
             _buildingPreviewInstance = Instantiate(building.BuildingPreview);
             _buildingRendererInstance = _buildingPreviewInstance.GetComponentInChildren<Renderer>();
@@ -76,6 +82,9 @@ namespace Rts.Buildings
             {
                 _buildingPreviewInstance.SetActive(true);
             }
+
+            var color = _player.CanPlaceBuilding(_buildingCollider, hit.point) ? Color.green : Color.red;
+            _buildingRendererInstance.material.SetColor(BaseColor, color);
         }
     }
 }

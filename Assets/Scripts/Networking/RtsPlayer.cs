@@ -11,13 +11,16 @@ namespace Rts.Networking
     public class RtsPlayer : NetworkBehaviour
     {
         [SerializeField] private Building[] buildings = new Building[0];
-        [SerializeField] private List<Unit> myUnits = new List<Unit>();
-        [SerializeField] private List<Building> myBuildings = new List<Building>();
-
+        [SerializeField] private LayerMask buildingBlockLayer;
+        [SerializeField] private float buildingRangeLimit = 5f;
+        
+        private readonly List<Unit> _myUnits = new List<Unit>();
+        private readonly List<Building> _myBuildings = new List<Building>();
+        
         public event Action<int> ClientOnResourcesUpdated; 
         
-        public IEnumerable<Unit> MyUnits => myUnits;
-        public IEnumerable<Building> MyBuildings => myBuildings;
+        public IEnumerable<Unit> MyUnits => _myUnits;
+        public IEnumerable<Building> MyBuildings => _myBuildings;
         
         [field: SyncVar(hook = nameof(ClientHandleResourcesUpdated))]
         public int Resources { get; private set; } = 500;
@@ -26,6 +29,13 @@ namespace Rts.Networking
         public void SetResources(int newResources)
         {
             Resources = newResources;
+        }
+
+        public bool CanPlaceBuilding(BoxCollider buildingCollider, Vector3 point)
+        {
+            return !Physics.CheckBox(point + buildingCollider.center, buildingCollider.size / 2, Quaternion.identity,
+                buildingBlockLayer) && _myBuildings.Any(building =>
+                (point - building.transform.position).sqrMagnitude <= buildingRangeLimit * buildingRangeLimit);
         }
 
         #region Server
@@ -52,38 +62,45 @@ namespace Rts.Networking
             var buildingToPlace = buildings.FirstOrDefault(building => building.ID == buildingId);
 
             if (buildingToPlace == null) return;
+            if (Resources < buildingToPlace.Price) return;
+
+            var buildingCollider = buildingToPlace.GetComponent<BoxCollider>();
+
+            if (!CanPlaceBuilding(buildingCollider, point)) return;
 
             var buildingInstance = Instantiate(buildingToPlace.gameObject, point, buildingToPlace.transform.rotation);
             
             NetworkServer.Spawn(buildingInstance, connectionToClient);
+            
+            SetResources(Resources - buildingToPlace.Price);
         }
 
         private void ServerHandleUnitSpawned(Unit unit)
         {
             if (unit.connectionToClient.connectionId != connectionToClient.connectionId) return;
             
-            myUnits.Add(unit);
+            _myUnits.Add(unit);
         }
 
         private void ServerHandleUnitDespawned(Unit unit)
         {
             if (unit.connectionToClient.connectionId != connectionToClient.connectionId) return;
             
-            myUnits.Remove(unit);
+            _myUnits.Remove(unit);
         }
         
         private void ServerHandleBuildingSpawned(Building building)
         {
             if (building.connectionToClient.connectionId != connectionToClient.connectionId) return;
             
-            myBuildings.Add(building);
+            _myBuildings.Add(building);
         }
 
         private void ServerHandleBuildingDespawned(Building building)
         {
             if (building.connectionToClient.connectionId != connectionToClient.connectionId) return;
             
-            myBuildings.Remove(building);
+            _myBuildings.Remove(building);
         }
 
         #endregion
@@ -112,22 +129,22 @@ namespace Rts.Networking
 
         private void AuthorityHandleUnitSpawned(Unit unit)
         {
-            myUnits.Add(unit);
+            _myUnits.Add(unit);
         }
 
         private void AuthorityHandleUnitDespawned(Unit unit)
         {
-            myUnits.Remove(unit);
+            _myUnits.Remove(unit);
         }
         
         private void AuthorityHandleBuildingSpawned(Building building)
         {
-            myBuildings.Add(building);
+            _myBuildings.Add(building);
         }
 
         private void AuthorityHandleBuildingDespawned(Building building)
         {
-            myBuildings.Remove(building);
+            _myBuildings.Remove(building);
         }
 
         private void ClientHandleResourcesUpdated(int oldValue, int newValue)
