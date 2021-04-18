@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Mirror;
 using Rts.Buildings;
 using UnityEngine;
@@ -9,12 +10,86 @@ namespace Rts.Networking
 {
     public class RtsNetworkManager : NetworkManager
     {
-        [SerializeField] private GameObject unitSpawnerPrefab;
+        [SerializeField] private GameObject unitBasePrefab;
         [SerializeField] private GameOverHandler gameOverHandlerPrefab;
 
         public static event Action ClientOnConnected;
         public static event Action ClientOnDisconnected;
 
+        private bool _isGameInProgress;
+
+        public List<RtsPlayer> Players { get; } = new List<RtsPlayer>();
+
+        #region Server
+
+        public override void OnServerConnect(NetworkConnection conn)
+        {
+            if(!_isGameInProgress) return;
+            
+            conn.Disconnect();
+        }
+
+        public override void OnServerDisconnect(NetworkConnection conn)
+        {
+            var player = conn.identity.GetComponent<RtsPlayer>();
+
+            Players.Remove(player);
+            
+            base.OnServerDisconnect(conn);
+        }
+
+        public override void OnStopServer()
+        {
+            Players.Clear();
+
+            _isGameInProgress = false;
+        }
+
+        public void StartGame()
+        {
+            if(Players.Count < 2) return;
+
+            _isGameInProgress = true;
+
+            ServerChangeScene("Scene_Map_01");
+        }
+
+        public override void OnServerAddPlayer(NetworkConnection conn)
+        {
+            base.OnServerAddPlayer(conn);
+
+            var player = conn.identity.GetComponent<RtsPlayer>();
+            
+            Players.Add(player);
+            
+            player.SetTeamColor(new Color(
+                Random.Range(0f, 1f),
+                Random.Range(0f, 1f),
+                Random.Range(0f, 1f)));
+            
+            player.SetPartyOwner(Players.Count == 1);
+        }
+
+        public override void OnServerSceneChanged(string sceneName)
+        {
+            if (!SceneManager.GetActiveScene().name.StartsWith("Scene_Map")) return;
+            
+            var gameOverHandlerInstance = Instantiate(gameOverHandlerPrefab);
+                
+            NetworkServer.Spawn(gameOverHandlerInstance.gameObject);
+
+            foreach (var player in Players)
+            {
+                var baseInstance = Instantiate(unitBasePrefab, GetStartPosition().position, Quaternion.identity);
+                
+                NetworkServer.Spawn(baseInstance, player.connectionToClient);
+            }
+        }
+
+        #endregion
+
+        #region Client
+        
         public override void OnClientConnect(NetworkConnection conn)
         {
             base.OnClientConnect(conn);
@@ -29,26 +104,12 @@ namespace Rts.Networking
             OnClientOnDisconnected();
         }
 
-        public override void OnServerAddPlayer(NetworkConnection conn)
+        public override void OnStopClient()
         {
-            base.OnServerAddPlayer(conn);
-
-            var player = conn.identity.GetComponent<RtsPlayer>();
-            
-            player.SetTeamColor(new Color(
-                Random.Range(0f, 1f),
-                Random.Range(0f, 1f),
-                Random.Range(0f, 1f)));
+            Players.Clear();
         }
 
-        public override void OnServerSceneChanged(string sceneName)
-        {
-            if (!SceneManager.GetActiveScene().name.StartsWith("Scene_Map")) return;
-            
-            var gameOverHandlerInstance = Instantiate(gameOverHandlerPrefab);
-                
-            NetworkServer.Spawn(gameOverHandlerInstance.gameObject);
-        }
+        #endregion
 
         private static void OnClientOnConnected()
         {
