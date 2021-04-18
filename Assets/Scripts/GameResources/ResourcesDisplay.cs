@@ -11,19 +11,13 @@ namespace Rts.GameResources
 
         private RtsPlayer _player;
 
-        private void Update()
+        private void Start()
         {
-            if (_player == null)
-            {
-                _player = NetworkClient.connection.identity.GetComponent<RtsPlayer>();
-
-                if (_player != null)
-                {
-                    ClientHandleResourcesUpdated(_player.Resources);
+            _player = NetworkClient.connection.identity.GetComponent<RtsPlayer>();
+            
+            ClientHandleResourcesUpdated(_player.Resources);
                     
-                    _player.ClientOnResourcesUpdated += ClientHandleResourcesUpdated;
-                }
-            }
+            _player.ClientOnResourcesUpdated += ClientHandleResourcesUpdated;
         }
 
         private void OnDestroy()

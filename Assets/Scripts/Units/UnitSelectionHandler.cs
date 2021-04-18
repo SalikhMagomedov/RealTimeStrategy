@@ -44,8 +44,6 @@ namespace Rts.Units
 
         private void Update()
         {
-            if (_player == null) _player = NetworkClient.connection.identity.GetComponent<RtsPlayer>();
-
             if (Mouse.current.leftButton.wasPressedThisFrame)
                 StartSelectionArea();
             else if (Mouse.current.leftButton.wasReleasedThisFrame)

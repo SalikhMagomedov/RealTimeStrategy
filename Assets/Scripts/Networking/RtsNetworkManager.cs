@@ -62,6 +62,8 @@ namespace Rts.Networking
             
             Players.Add(player);
             
+            player.SetDisplayName($"Player {Players.Count}");
+            
             player.SetTeamColor(new Color(
                 Random.Range(0f, 1f),
                 Random.Range(0f, 1f),

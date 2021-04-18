@@ -22,6 +22,7 @@ namespace Rts.Networking
         public event Action<int> ClientOnResourcesUpdated;
         
         public static event Action<bool> AuthorityOnPartyOwnerStateUpdated;
+        public static event Action ClientOnInfoUpdated;
 
         public Transform CameraTransform => cameraTransform;
         public IEnumerable<Unit> MyUnits => _myUnits;
@@ -33,10 +34,19 @@ namespace Rts.Networking
         [field: SyncVar(hook = nameof(AuthorityHandlePartyOwnerStateUpdated))]
         public bool IsPartyOwner { get; private set; }
         
+        [field: SyncVar(hook = nameof(ClientHandleDisplayNameUpdated))]
+        public string DisplayName { get; private set; }
+        
         [Server]
         public void SetResources(int newResources)
         {
             Resources = newResources;
+        }
+
+        [Server]
+        public void SetDisplayName(string displayName)
+        {
+            DisplayName = displayName;
         }
 
         public bool CanPlaceBuilding(BoxCollider buildingCollider, Vector3 point)
@@ -54,6 +64,8 @@ namespace Rts.Networking
             Unit.ServerOnUnitDespawned += ServerHandleUnitDespawned;
             Building.ServerOnBuildingSpawned += ServerHandleBuildingSpawned;
             Building.ServerOnBuildingDespawned += ServerHandleBuildingDespawned;
+            
+            DontDestroyOnLoad(gameObject);
         }
 
         public override void OnStopServer()
@@ -155,11 +167,14 @@ namespace Rts.Networking
         {
             if(NetworkServer.active) return;
 
+            DontDestroyOnLoad(gameObject);
             ((RtsNetworkManager) NetworkManager.singleton).Players.Add(this);
         }
 
         public override void OnStopClient()
         {
+            OnClientOnInfoUpdated();
+            
             if (!isClientOnly) return;
             
             ((RtsNetworkManager) NetworkManager.singleton).Players.Remove(this);
@@ -204,6 +219,11 @@ namespace Rts.Networking
             OnClientOnResourcesUpdated(newValue);
         }
 
+        private void ClientHandleDisplayNameUpdated(string oldName, string newName)
+        {
+            OnClientOnInfoUpdated();
+        }
+
         #endregion
 
         protected virtual void OnClientOnResourcesUpdated(int obj)
@@ -211,9 +231,14 @@ namespace Rts.Networking
             ClientOnResourcesUpdated?.Invoke(obj);
         }
 
-        private void OnAuthorityOnPartyOwnerStateUpdated(bool obj)
+        protected virtual void OnAuthorityOnPartyOwnerStateUpdated(bool obj)
         {
             AuthorityOnPartyOwnerStateUpdated?.Invoke(obj);
+        }
+
+        private static void OnClientOnInfoUpdated()
+        {
+            ClientOnInfoUpdated?.Invoke();
         }
     }
 }

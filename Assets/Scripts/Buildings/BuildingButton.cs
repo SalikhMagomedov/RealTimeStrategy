@@ -29,17 +29,14 @@ namespace Rts.Buildings
 
             iconImage.sprite = building.Icon;
             priceText.text = building.Price.ToString();
+            
+            _player = NetworkClient.connection.identity.GetComponent<RtsPlayer>();
 
             _buildingCollider = building.GetComponent<BoxCollider>();
         }
 
         private void Update()
         {
-            if (_player == null)
-            {
-                _player = NetworkClient.connection.identity.GetComponent<RtsPlayer>();
-            }
-            
             if (_buildingPreviewInstance == null) return;
             
             UpdateBuildingPreview();
