@@ -10,6 +10,7 @@ namespace Rts.Networking
 {
     public class RtsPlayer : NetworkBehaviour
     {
+        [SerializeField] private Transform cameraTransform;
         [SerializeField] private Building[] buildings = new Building[0];
         [SerializeField] private LayerMask buildingBlockLayer;
         [SerializeField] private float buildingRangeLimit = 5f;
@@ -17,9 +18,10 @@ namespace Rts.Networking
         private Color _teamColor;
         private readonly List<Unit> _myUnits = new List<Unit>();
         private readonly List<Building> _myBuildings = new List<Building>();
-        
+
         public event Action<int> ClientOnResourcesUpdated;
 
+        public Transform CameraTransform => cameraTransform;
         public IEnumerable<Unit> MyUnits => _myUnits;
         public IEnumerable<Building> MyBuildings => _myBuildings;
         
