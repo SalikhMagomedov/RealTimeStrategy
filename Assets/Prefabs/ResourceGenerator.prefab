@@ -112,7 +112,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  aimAtPoint: {fileID: 2679267963150034385}
+  aimAtPoint: {fileID: 0}
 --- !u!1 &3066148332128264811
 GameObject:
   m_ObjectHideFlags: 0
@@ -200,14 +200,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8eae5af2b4086d543ad336bc6a7a3faa, type: 3}
---- !u!4 &2679267963150034385 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2469200233015839578, guid: 8eae5af2b4086d543ad336bc6a7a3faa, type: 3}
-  m_PrefabInstance: {fileID: 534503955281800843}
-  m_PrefabAsset: {fileID: 0}
---- !u!23 &8705675500516322712 stripped
-MeshRenderer:
-  m_CorrespondingSourceObject: {fileID: 9203727328008749843, guid: 8eae5af2b4086d543ad336bc6a7a3faa, type: 3}
+--- !u!137 &9204010583037532950 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 8705957669489325469, guid: 8eae5af2b4086d543ad336bc6a7a3faa, type: 3}
   m_PrefabInstance: {fileID: 534503955281800843}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1613617647814029804
@@ -300,7 +295,7 @@ PrefabInstance:
     - target: {fileID: 7036807126739392139, guid: 2e85181bebaebb048a51e731b4bdd119, type: 3}
       propertyPath: colorRenderers.Array.data[0]
       value: 
-      objectReference: {fileID: 8705675500516322712}
+      objectReference: {fileID: 9204010583037532950}
     - target: {fileID: 7036807126739392139, guid: 2e85181bebaebb048a51e731b4bdd119, type: 3}
       propertyPath: colorRenderers.Array.data[1]
       value: 
